@@ -268,6 +268,7 @@ function Dashboard({ p, skills, avg, projects, goals, nav }) {
         <div>
           <label>STUDENT DASHBOARD</label>
           <h1>Welcome back, {p.name.split(' ')[0]}! 👋</h1>
+          <p>Continue building your skills and achieving your career goals.</p>
           <p>Track your skills, build your profile, and move closer to your career goal.</p>
         </div>
         <button className="primary" onClick={() => nav('Skill Gap Analyzer')}>Analyze Skill Gap →</button>
@@ -337,7 +338,6 @@ function Field({ label, value, onChange, type = 'text', placeholder = '' }) {
     </label>
   );
 }
-
 function Profile({ p, setP, notify }) {
   const [f, setF] = useState(p);
   const save = (e) => { e.preventDefault(); setP(f); notify('Profile updated successfully'); };
@@ -351,7 +351,7 @@ function Profile({ p, setP, notify }) {
           <p>{f.careerGoal}</p>
           <span className="tag">BCA</span><span className="tag">Student</span>
           <hr />
-          <small>✉ {f.email}</small><br />
+          <small>✉️ {f.email}</small><br />
           <small>⌕ {f.github}</small><br />
           <small>in {f.linkedin}</small>
         </div>
@@ -467,7 +467,7 @@ function Projects({ data, setData, notify }) {
               {project.technologies.split(',').map((t) => <span key={t}>{t.trim()}</span>)}
             </div>
             <div className="projectFoot">
-              <a href={project.link}>View project ↗</a>
+              <a href={project.link}>View project ↗️</a>
               <button onClick={() => { setEdit(project.id); setF(project); }}>Edit</button>
               <button onClick={() => { setData(data.filter(item => item.id !== project.id)); notify('Project removed'); }}>Delete</button>
             </div>
@@ -581,7 +581,7 @@ function Gap({ skills, profile }) {
     <>
       <Head ey="CAREER TOOLS" title="Skill Gap Analyzer" sub="Compare your skills with your target career role." />
       <div className="grid2">
-        <Card title={`Required for ${profile.careerGoal}`}>
+        <Card title={'Required for ${profile.careerGoal}'}>
           <div className="tags" style={{ padding: '10px 0' }}>
             {required.map(r => <span key={r} style={{ margin: '4px', padding: '6px 12px', background: '#e0f2fe', color: '#0369a1', borderRadius: '4px' }}>{r}</span>)}
           </div>
@@ -623,7 +623,7 @@ function Opportunities() {
       <div className="projectGrid">
         {opportunitiesList.map((opp, i) => (
           <div className="card project" key={i}>
-            <div className="projectIcon">↗</div>
+            <div className="projectIcon">↗️</div>
             <h3>{opp[0]}</h3>
             <p><b>{opp[1]}</b> · {opp[2]} ({opp[3]})</p>
             <span className="tag">{opp[4]}</span>
