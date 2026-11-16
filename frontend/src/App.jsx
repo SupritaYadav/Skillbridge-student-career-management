@@ -613,27 +613,88 @@ function Goals({ data, setData, notify }) {
 }
 
 function Gap({ skills, profile }) {
-  const required = roles[profile.careerGoal] || roles['Full Stack Java Developer'];
-  const userSkills = skills.map(s => s.skillName.toLowerCase());
-  const missing = required.filter(req => !userSkills.includes(req.toLowerCase()));
+  const careerGoal = profile?.careerGoal || 'Full Stack Java Developer';
+
+  const [required, setRequired] = useState([]);
+  const [missing, setMissing] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchSkillGap = async () => {
+      try {
+        setLoading(true);
+        setError('');
+
+        const response = await fetch(
+          `http://localhost:8080/api/skill-gap/analyze?careerGoal=${encodeURIComponent(careerGoal)}`
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch skill gap analysis');
+        }
+
+        const data = await response.json();
+
+        setRequired(data.requiredSkills);
+        setMissing(data.missingSkills);
+
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSkillGap();
+  }, [careerGoal]);
 
   return (
     <>
-      <Head ey="CAREER TOOLS" title="Skill Gap Analyzer" sub="Compare your skills with your target career role." />
-      <div className="grid2">
-        <Card title={'Required for ${profile.careerGoal}'}>
-          <div className="tags" style={{ padding: '10px 0' }}>
-            {required.map(r => <span key={r} style={{ margin: '4px', padding: '6px 12px', background: '#e0f2fe', color: '#0369a1', borderRadius: '4px' }}>{r}</span>)}
-          </div>
-        </Card>
-        <Card title="Missing Skills to Acquire">
-          {missing.length ? (
+      <Head ey="CAREER TOOLS" title="Skill Gap Analyzer"
+        sub="Compare your skills with your target career role." />
+
+      {loading ? (
+        <p>Analyzing your skills...</p>
+      ) : error ? (
+        <p style={{ color: 'red' }}>{error}</p>
+      ) : (
+        <div className="grid2">
+          <Card title={`Required for ${careerGoal}`}>
             <div className="tags" style={{ padding: '10px 0' }}>
-              {missing.map(m => <span key={m} style={{ margin: '4px', padding: '6px 12px', background: '#fee2e2', color: '#991b1b', borderRadius: '4px' }}>{m}</span>)}
+              {required.map(r => (
+                <span key={r} style={{
+                  margin: '4px',
+                  padding: '6px 12px',
+                  background: '#e0f2fe',
+                  color: '#0369a1',
+                  borderRadius: '4px'
+                }}>{r}</span>
+              ))}
             </div>
-          ) : <p style={{ color: 'green', fontWeight: 'bold' }}>Awesome! You have all the core skills for this role.</p>}
-        </Card>
-      </div>
+          </Card>
+
+          <Card title="Missing Skills to Acquire">
+            {missing.length ? (
+              <div className="tags" style={{ padding: '10px 0' }}>
+                {missing.map(m => (
+                  <span key={m} style={{
+                    margin: '4px',
+                    padding: '6px 12px',
+                    background: '#fee2e2',
+                    color: '#991b1b',
+                    borderRadius: '4px'
+                  }}>{m}</span>
+                ))}
+              </div>
+            ) : (
+              <p style={{ color: 'green', fontWeight: 'bold' }}>
+                Awesome! You have all the core skills for this role.
+              </p>
+            )}
+          </Card>
+        </div>
+      )}
     </>
   );
 }
