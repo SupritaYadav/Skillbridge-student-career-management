@@ -394,6 +394,8 @@ function Profile({ p, setP, notify }) {
           <small>✉️ {f.email}</small><br />
           <small>⌕ {f.github}</small><br />
           <small>in {f.linkedin}</small>
+          {f.phone && <><small>Phone: {f.phone}</small><br /></>}
+          {f.education && <small>Education: {f.education}</small>}
         </div>
         <form className="card form" onSubmit={save}>
           <h3>Personal & Career Information</h3>
