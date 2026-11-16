@@ -279,6 +279,46 @@ function Dashboard({ p, skills, avg, projects, goals, nav }) {
         <Stat icon="▣" label="Projects" value={projects.length} sub="Portfolio items" />
         <Stat icon="◎" label="Learning Goals" value={goals.length} sub="Active goals" />
       </div>
+      <div style={{
+  background: "#f8fafc",
+  padding: "20px",
+  borderRadius: "14px",
+  marginBottom: "20px",
+  border: "1px solid #e2e8f0"
+}}>
+  <h3>Quick Actions</h3>
+  <p>Manage your career development easily.</p>
+
+  <div style={{
+    display: "flex",
+    gap: "12px",
+    flexWrap: "wrap"
+  }}>
+    <button
+      type="button"
+      className="primary"
+      onClick={() => nav('My Profile')}
+    >
+      Update Profile
+    </button>
+
+    <button
+      type="button"
+      className="primary"
+      onClick={() => nav('Skills')}
+    >
+      Manage Skills
+    </button>
+
+    <button
+      type="button"
+      className="primary"
+      onClick={() => nav('Projects')}
+    >
+      View Projects
+    </button>
+  </div>
+</div>
       <div className="grid2">
         <Card title="Skill Progress" action={<button onClick={() => nav('Skills')}>View all →</button>}>
           {list.map((skill) => <Progress key={skill.id || skill.skillName} s={skill} />)}
