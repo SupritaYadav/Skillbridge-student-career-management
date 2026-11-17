@@ -611,7 +611,7 @@ function Goals({ data, setData, notify }) {
                 <strong>{g.title}</strong>
                 <p>{g.description}</p>
                 <small>Target: {g.target}</small>
-    
+                <small>Progress: {g.status === 'Completed' ? '100%' : g.status === 'In Progress' ? '50%' : '0%'}</small>
               </div>
               <button onClick={() => cycle(g.id)}><Status t={g.status} /></button>
             </div>
