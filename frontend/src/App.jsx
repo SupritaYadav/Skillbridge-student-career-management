@@ -463,6 +463,11 @@ function Skills({ skills, setSkills, notify }) {
           <button type="submit" className="primary fullBtn">{edit ? 'Update Skill' : 'Add Skill'}</button>
         </form>
         <Card title="Your Skills">
+          <p>
+            Beginner: {skills.filter(s => s.skillLevel === 'Beginner').length} |
+            Intermediate: {skills.filter(s => s.skillLevel === 'Intermediate').length} |
+            Advanced: {skills.filter(s => s.skillLevel === 'Advanced').length}
+          </p>
           {skills.length ? skills.map((skill) => (
             <div className="skillItem" key={skill.id}>
               <Progress s={skill} />
