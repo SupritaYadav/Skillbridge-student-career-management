@@ -381,6 +381,25 @@ function Field({ label, value, onChange, type = 'text', placeholder = '' }) {
 function Profile({ p, setP, notify }) {
   const [f, setF] = useState(p);
   const save = (e) => { e.preventDefault(); setP(f); notify('Profile updated successfully'); };
+  const requiredFields = [
+  { label: 'Full Name', value: f.name },
+  { label: 'Email', value: f.email },
+  { label: 'Education', value: f.education },
+  { label: 'Career Goal', value: f.careerGoal },
+  { label: 'Bio', value: f.bio }
+];
+
+const completedFields = requiredFields.filter(
+  item => String(item.value || '').trim()
+).length;
+
+const completion = Math.round(
+  (completedFields / requiredFields.length) * 100
+);
+
+const missingFields = requiredFields
+  .filter(item => !String(item.value || '').trim())
+  .map(item => item.label);
   return (
     <>
       <Head ey="MY CAREER" title="My Profile" sub="Keep your professional information up to date." action={<button className="primary" onClick={save}>Save Changes</button>} />
@@ -389,6 +408,12 @@ function Profile({ p, setP, notify }) {
           <div className="bigAvatar">{initials(f.name)}</div>
           <h2>{f.name}</h2>
           <p>{f.careerGoal}</p>
+          <p><strong>Profile Completion: {completion}%</strong></p>
+          <small>
+            {missingFields.length > 0
+              ? `Missing: ${missingFields.join(', ')}`
+              : 'Profile completed successfully'}
+          </small>
           <span className="tag">BCA</span><span className="tag">Student</span>
           <hr />
           <small>✉️ {f.email}</small><br />
