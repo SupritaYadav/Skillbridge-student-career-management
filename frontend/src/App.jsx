@@ -466,6 +466,7 @@ function Skills({ skills, setSkills, notify }) {
           {skills.length ? skills.map((skill) => (
             <div className="skillItem" key={skill.id}>
               <Progress s={skill} />
+              <small>Level: {skill.skillLevel}</small>
               <div className="actions">
                 <button onClick={() => { setEdit(skill.id); setF(skill); }}>Edit</button>
                 <button onClick={() => del(skill.id)}>Delete</button>
