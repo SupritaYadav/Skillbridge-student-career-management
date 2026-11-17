@@ -561,12 +561,13 @@ function Certs({ data, setData, notify }) {
           <button className="primary fullBtn">Add Certification</button>
         </form>
         <Card title="Your Certifications">
+          <p>Total Certificates: {Certs.length}</p>
           {data.map((c) => (
             <div className="cert" key={c.id}>
               <b>✓</b>
               <div>
                 <strong>{c.name}</strong>
-                <small>{c.organization} · {c.date}</small>
+                <small>{c.organization} · {c.date}</small> 
               </div>
               <button onClick={() => { setData(data.filter(item => item.id !== c.id)); notify('Certification removed'); }}>×</button>
             </div>
