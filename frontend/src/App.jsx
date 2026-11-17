@@ -753,19 +753,40 @@ function Resources() {
 }
 
 function Opportunities() {
+  const groupedOpportunities = opportunitiesList.reduce((groups, opp) => {
+    const type = opp[2];
+
+    if (!groups[type]) {
+      groups[type] = [];
+    }
+
+    groups[type].push(opp);
+    return groups;
+  }, {});
+
   return (
     <>
       <Head ey="CAREER TOOLS" title="Opportunities" sub="Explore internships and jobs suited for you." />
-      <div className="projectGrid">
-        {opportunitiesList.map((opp, i) => (
-          <div className="card project" key={i}>
-            <div className="projectIcon">↗️</div>
-            <h3>{opp[0]}</h3>
-            <p><b>{opp[1]}</b> · {opp[2]} ({opp[3]})</p>
-            <span className="tag">{opp[4]}</span>
+
+      {Object.entries(groupedOpportunities).map(([type, items]) => (
+        <div key={type}>
+          <h3>
+            {type} Opportunities
+            <span className="tag">{items.length} Available</span>
+          </h3>
+
+          <div className="projectGrid">
+            {items.map((opp, i) => (
+              <div className="card project" key={`${type}-${i}`}>
+                <div className="projectIcon">↗️</div>
+                <h3>{opp[0]}</h3>
+                <p><b>{opp[1]}</b> · {opp[3]}</p>
+                <span className="tag">{opp[4]}</span>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
     </>
   );
 }
