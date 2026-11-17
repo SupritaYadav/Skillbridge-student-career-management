@@ -277,7 +277,7 @@ function Dashboard({ p, skills, avg, projects, goals, nav }) {
         <Stat icon="✦" label="Skills Tracked" value={skills.length} sub="Keep learning" />
         <Stat icon="◒" label="Average Progress" value={avg + '%'} sub="Keep improving" />
         <Stat icon="▣" label="Projects" value={projects.length} sub="Portfolio items" />
-        <Stat icon="◎" label="Learning Goals" value={goals.length} sub="Active goals" />
+        <Stat icon="🎯" label="Completed Goals" value={goals.filter((goal) => goal.status === 'Completed').length} sub={`${goals.length} total goals`} />
       </div>
       <div style={{
   background: "#f8fafc",
@@ -605,6 +605,7 @@ function Goals({ data, setData, notify }) {
                 <strong>{g.title}</strong>
                 <p>{g.description}</p>
                 <small>Target: {g.target}</small>
+    
               </div>
               <button onClick={() => cycle(g.id)}><Status t={g.status} /></button>
             </div>
