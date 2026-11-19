@@ -239,6 +239,50 @@ function Dashboard({ p, skills, avg, projects, goals, nav, loading }) {
           <button type="button" className="primary" onClick={() => nav('Projects')}>View Projects</button>
         </div>
       </div>
+
+      <div style={{
+  background: "#f8fafc",
+  padding: "20px",
+  borderRadius: "14px",
+  marginBottom: "20px",
+  border: "1px solid #e2e8f0"
+}}>
+  <h3 style={{ color: "#1e293b" }}>Quick Actions</h3>
+  <p style={{ color: "#475569" }}>
+  Manage your career development easily.
+  </p>
+
+  <div style={{
+    display: "flex",
+    gap: "12px",
+    flexWrap: "wrap"
+  }}>
+    <button
+      type="button"
+      className="primary"
+      onClick={() => nav('My Profile')}
+    >
+      Update Profile
+    </button>
+
+    <button
+      type="button"
+      className="primary"
+      onClick={() => nav('Skills')}
+    >
+      Manage Skills
+    </button>
+
+    <button
+      type="button"
+      className="primary"
+      onClick={() => nav('Projects')}
+    >
+      View Projects
+    </button>
+  </div>
+</div>
+
       <div className="grid2">
         <Card title="Skill Progress" action={<button onClick={() => nav('Skills')}>View all →</button>}>
           <ModuleMessage loading={loading.skills} hasData={skills.length > 0} empty="No skills in the database yet. Add your first skill.">
