@@ -1,3 +1,4 @@
+
 package com.skillbridge.services;
 
 import java.util.List;
@@ -12,7 +13,8 @@ public class LearningGoalService {
 
     private final LearningGoalRepository learningGoalRepository;
 
-    public LearningGoalService(LearningGoalRepository learningGoalRepository) {
+    public LearningGoalService(
+            LearningGoalRepository learningGoalRepository) {
         this.learningGoalRepository = learningGoalRepository;
     }
 
@@ -24,11 +26,16 @@ public class LearningGoalService {
         return learningGoalRepository.findAll();
     }
 
+    public List<LearningGoal> getLearningGoalsByStudentId(Long studentId) {
+        return learningGoalRepository.findByStudent_Id(studentId);
+    }
+
     public LearningGoal getLearningGoalById(Long id) {
         return learningGoalRepository.findById(id).orElse(null);
     }
 
-    public LearningGoal updateLearningGoal(Long id, LearningGoal learningGoal) {
+    public LearningGoal updateLearningGoal(
+            Long id, LearningGoal learningGoal) {
 
         LearningGoal existing = getLearningGoalById(id);
 
@@ -45,7 +52,6 @@ public class LearningGoalService {
     }
 
     public boolean deleteLearningGoal(Long id) {
-
         if (!learningGoalRepository.existsById(id)) {
             return false;
         }

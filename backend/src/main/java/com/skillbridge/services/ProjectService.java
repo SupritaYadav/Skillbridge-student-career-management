@@ -1,3 +1,4 @@
+
 package com.skillbridge.services;
 
 import java.util.List;
@@ -23,6 +24,10 @@ public class ProjectService {
 
     public List<Project> getAllProjects() {
         return projectRepository.findAll();
+    }
+
+    public List<Project> getProjectsByStudentId(Long studentId) {
+        return projectRepository.findByStudent_Id(studentId);
     }
 
     public Optional<Project> getProjectById(Long id) {
@@ -54,4 +59,3 @@ public class ProjectService {
         return true;
     }
 }
-

@@ -1,10 +1,8 @@
+
 package com.skillbridge.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "students")
@@ -18,6 +16,11 @@ public class Student {
     private String email;
     private String phone;
     private String careerGoal;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", unique = true)
+    @JsonIgnore
+    private User user;
 
     public Student() {
     }
@@ -56,5 +59,13 @@ public class Student {
 
     public void setCareerGoal(String careerGoal) {
         this.careerGoal = careerGoal;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

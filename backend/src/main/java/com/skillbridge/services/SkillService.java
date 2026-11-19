@@ -1,3 +1,4 @@
+
 package com.skillbridge.services;
 
 import java.util.List;
@@ -24,8 +25,26 @@ public class SkillService {
         return skillRepository.findAll();
     }
 
+    public List<Skill> getSkillsByStudentId(Long studentId) {
+        return skillRepository.findByStudent_Id(studentId);
+    }
+
     public Skill getSkillById(Long id) {
         return skillRepository.findById(id).orElse(null);
+    }
+
+    public Skill updateSkill(Long id, Skill updatedSkill) {
+        Skill existing = getSkillById(id);
+
+        if (existing == null) {
+            return null;
+        }
+
+        existing.setSkillName(updatedSkill.getSkillName());
+        existing.setSkillLevel(updatedSkill.getSkillLevel());
+        existing.setProgress(updatedSkill.getProgress());
+
+        return skillRepository.save(existing);
     }
 
     public void deleteSkill(Long id) {

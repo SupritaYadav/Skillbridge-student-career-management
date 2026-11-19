@@ -1,51 +1,112 @@
-package com.skillbridge.controller;
 
-import java.util.List;
+package com.skillbridge.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import com.skillbridge.entity.Certification;
+import com.skillbridge.entity.Student;
 import com.skillbridge.services.CertificationService;
+import com.skillbridge.services.StudentService;
 
 @RestController
 @RequestMapping("/api/certifications")
 @CrossOrigin(origins = {
     "http://localhost:5173",
+    "http://localhost:5174",
     "http://localhost:5175"
 })
 public class CertificationController {
 
     private final CertificationService certificationService;
+    private final StudentService studentService;
 
-    public CertificationController(CertificationService certificationService) {
+    public CertificationController(
+            CertificationService certificationService,
+            StudentService studentService) {
         this.certificationService = certificationService;
+        this.studentService = studentService;
     }
 
-    // Add certification
+    private boolean hasRole(Authentication auth, String role) {
+        return auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_" + role));
+    }
+
+    private boolean isStudent(Authentication auth) {
+        return hasRole(auth, "STUDENT");
+    }
+
+    private boolean isFacultyOrAdmin(Authentication auth) {
+        return hasRole(auth, "FACULTY") || hasRole(auth, "ADMIN");
+    }
+
+    private boolean isAdmin(Authentication auth) {
+        return hasRole(auth, "ADMIN");
+    }
+
+    private boolean ownsCertification(
+            Certification certification, Student student) {
+        return certification.getStudent() != null
+                && student != null
+                && certification.getStudent().getId().equals(student.getId());
+    }
+
     @PostMapping
-    public ResponseEntity<Certification> addCertification(
-            @RequestBody Certification certification) {
+    public ResponseEntity<?> addCertification(
+            @RequestBody Certification certification,
+            Authentication auth) {
 
-        Certification saved =
-                certificationService.addCertification(certification);
+        if (!isStudent(auth)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Only students can add certifications.");
+        }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+        Student student =
+                studentService.getStudentByUserEmail(auth.getName());
+
+        if (student == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Student profile not found.");
+        }
+
+        certification.setStudent(student);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(certificationService.addCertification(certification));
     }
 
-    // Get all certifications
     @GetMapping
-    public ResponseEntity<List<Certification>> getAllCertifications() {
+    public ResponseEntity<?> getAllCertifications(Authentication auth) {
 
-        return ResponseEntity.ok(
-                certificationService.getAllCertifications());
+        if (isStudent(auth)) {
+            Student student =
+                    studentService.getStudentByUserEmail(auth.getName());
+
+            if (student == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Student profile not found.");
+            }
+
+            return ResponseEntity.ok(
+                    certificationService.getCertificationsByStudentId(
+                            student.getId()));
+        }
+
+        if (isFacultyOrAdmin(auth)) {
+            return ResponseEntity.ok(
+                    certificationService.getAllCertifications());
+        }
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-    // Get certification by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Certification> getCertificationById(
-            @PathVariable Long id) {
+    public ResponseEntity<?> getCertificationById(
+            @PathVariable Long id,
+            Authentication auth) {
 
         Certification certification =
                 certificationService.getCertificationById(id);
@@ -54,35 +115,73 @@ public class CertificationController {
             return ResponseEntity.notFound().build();
         }
 
+        if (isStudent(auth)) {
+            Student student =
+                    studentService.getStudentByUserEmail(auth.getName());
+
+            if (!ownsCertification(certification, student)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        } else if (!isFacultyOrAdmin(auth)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         return ResponseEntity.ok(certification);
     }
 
-    // Update certification
     @PutMapping("/{id}")
-    public ResponseEntity<Certification> updateCertification(
+    public ResponseEntity<?> updateCertification(
             @PathVariable Long id,
-            @RequestBody Certification certification) {
+            @RequestBody Certification updatedCertification,
+            Authentication auth) {
 
-        Certification updated =
-                certificationService.updateCertification(id, certification);
+        Certification existing =
+                certificationService.getCertificationById(id);
 
-        if (updated == null) {
+        if (existing == null) {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(updated);
+        if (isStudent(auth)) {
+            Student student =
+                    studentService.getStudentByUserEmail(auth.getName());
+
+            if (!ownsCertification(existing, student)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        } else if (!isAdmin(auth)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        return ResponseEntity.ok(
+                certificationService.updateCertification(
+                        id, updatedCertification));
     }
 
-    // Delete certification
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCertification(
-            @PathVariable Long id) {
+    public ResponseEntity<?> deleteCertification(
+            @PathVariable Long id,
+            Authentication auth) {
 
-        boolean deleted = certificationService.deleteCertification(id);
+        Certification existing =
+                certificationService.getCertificationById(id);
 
-        if (!deleted) {
+        if (existing == null) {
             return ResponseEntity.notFound().build();
         }
+
+        if (isStudent(auth)) {
+            Student student =
+                    studentService.getStudentByUserEmail(auth.getName());
+
+            if (!ownsCertification(existing, student)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        } else if (!isAdmin(auth)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        certificationService.deleteCertification(id);
 
         return ResponseEntity.noContent().build();
     }

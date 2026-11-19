@@ -1,3 +1,4 @@
+
 package com.skillbridge.services;
 
 import java.util.List;
@@ -12,27 +13,29 @@ public class CertificationService {
 
     private final CertificationRepository certificationRepository;
 
-    public CertificationService(CertificationRepository certificationRepository) {
+    public CertificationService(
+            CertificationRepository certificationRepository) {
         this.certificationRepository = certificationRepository;
     }
 
-    // Add a new certification
     public Certification addCertification(Certification certification) {
         return certificationRepository.save(certification);
     }
 
-    // Get all certifications
     public List<Certification> getAllCertifications() {
         return certificationRepository.findAll();
     }
 
-    // Get certification by ID
+    public List<Certification> getCertificationsByStudentId(Long studentId) {
+        return certificationRepository.findByStudent_Id(studentId);
+    }
+
     public Certification getCertificationById(Long id) {
         return certificationRepository.findById(id).orElse(null);
     }
 
-    // Update certification
-    public Certification updateCertification(Long id, Certification certification) {
+    public Certification updateCertification(
+            Long id, Certification certification) {
 
         Certification existing = getCertificationById(id);
 
@@ -48,9 +51,7 @@ public class CertificationService {
         return certificationRepository.save(existing);
     }
 
-    // Delete certification
     public boolean deleteCertification(Long id) {
-
         if (!certificationRepository.existsById(id)) {
             return false;
         }

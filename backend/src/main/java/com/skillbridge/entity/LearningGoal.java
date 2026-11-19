@@ -7,6 +7,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 
 @Entity
 @Table(name = "learning_goals")
@@ -23,6 +27,18 @@ public class LearningGoal {
     private LocalDate targetDate;
 
     private String status;
+    @ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "student_id")
+@JsonIgnore
+private Student student;
+
+public Student getStudent() {
+    return student;
+}
+
+public void setStudent(Student student) {
+    this.student = student;
+}
 
     public LearningGoal() {
     }
