@@ -100,7 +100,7 @@ function App() {
     setErrors((previous) => ({ ...previous, [module]: message }));
   };
 
-  const fetchModule = async (module, endpoint, setter) => {
+  /*const fetchModule = async (module, endpoint, setter) => {
     try {
       setLoading((previous) => ({ ...previous, [module]: true }));
       setModuleError(module, '');
@@ -111,8 +111,21 @@ function App() {
     } finally {
       setLoading((previous) => ({ ...previous, [module]: false }));
     }
-  };
+  };*/
+ const fetchModule = async (module, endpoint, setter) => {
+  try {
+    setLoading((previous) => ({ ...previous, [module]: true }));
+    setModuleError(module, '');
 
+    const data = await apiRequest(endpoint);
+    setter(Array.isArray(data) ? data : []);
+
+  } catch (error) {
+    setModuleError(module, error.message);
+  } finally {
+    setLoading((previous) => ({ ...previous, [module]: false }));
+  }
+};
   useEffect(() => {
     fetchModule('skills', '/skills', setSkills);
     fetchModule('projects', '/projects', setProjects);
@@ -430,6 +443,64 @@ function Dashboard({ role = 'STUDENT', p, skills, avg, projects, goals, students
     );
   }
 
+  if (role === 'FACULTY') {
+    return (
+      <>
+        <section className="hero">
+          <div>
+            <label>FACULTY DASHBOARD</label>
+            <h1>Welcome back, {(p.name || 'Faculty').split(' ')[0]}! 👋</h1>
+            <p>Support students in their learning and career development.</p>
+            <p>Manage learning resources and explore career opportunities.</p>
+          </div>
+        </section>
+
+        <div className="stats">
+          <Stat icon="♙" label="Student Records" value={loading.students ? '…' : students.length} sub="Learner directory" />
+          <Stat icon="▤" label="Learning Resources" value={loading.resources ? '…' : resources.length} sub="Available materials" />
+          <Stat icon="↗" label="Opportunities" value={loading.opportunities ? '…' : opportunities.length} sub="Career listings" />
+          <Stat icon="✦" label="Workspace" value="Active" sub="Faculty account" />
+        </div>
+
+        <section className="card adminWelcome">
+          <h2>Faculty Workspace</h2>
+          <p>Choose an area to support students and manage learning activities.</p>
+          <div className="adminActions">
+            <button type="button" className="primary" onClick={() => nav('Admin / Faculty')}>
+              Student Directory
+            </button>
+            <button type="button" className="primary" onClick={() => nav('Resources')}>
+              Manage Resources
+            </button>
+            <button type="button" className="primary" onClick={() => nav('Opportunities')}>
+              Manage Opportunities
+            </button>
+          </div>
+        </section>
+
+        <div className="grid2">
+          <Card title="Student Support">
+            <p>Review learner information and help students progress towards their career goals.</p>
+            <button type="button" className="secondary" onClick={() => nav('Admin / Faculty')}>
+              View Student Directory →
+            </button>
+          </Card>
+
+          <Card title="Learning & Career Opportunities">
+            <p>Share useful learning materials and career opportunities with students.</p>
+            <div className="adminActions">
+              <button type="button" className="secondary" onClick={() => nav('Resources')}>
+                View Resources →
+              </button>
+              <button type="button" className="secondary" onClick={() => nav('Opportunities')}>
+                View Opportunities →
+              </button>
+            </div>
+          </Card>
+        </div>
+      </>
+    );
+  }
   const list = skills.slice(0, 4);
   return (
     <>
@@ -754,8 +825,25 @@ function Goals({ data, setData, notify, loading, error, setError }) {
         <Card title="My Goals">
           <ModuleMessage loading={loading} hasData={data.length > 0} empty="No learning goals yet. Create your first goal.">
             {data.map((g) => <div className="goal" key={g.id}><div><strong>{g.title}</strong><p>{g.description}</p><small>Target: {g.target || g.targetDate || 'Not set'}</small></div>
-              <div className="actions"><button onClick={() => { setEdit(g.id); setF({ title: g.title, description: g.description || '', target: g.target || g.targetDate || '', status: g.status || 'Planned' }); }}>Edit</button>
-                <button onClick={() => cycle(g)}><Status t={g.status} /></button><button onClick={() => del(g.id)}>Delete</button></div></div>)}
+              <div className="goalActions">
+              <button type="button" className="secondary" onClick={() => {
+                setEdit(g.id);
+                setF({
+                  title: g.title,
+                  description: g.description || '',
+                  target: g.target || g.targetDate || '',
+                  status: g.status || 'Planned'
+                });
+              }}>Edit</button>
+
+              <button type="button" className="secondary" onClick={() => cycle(g)}>
+                <Status t={g.status} />
+              </button>
+
+              <button type="button" className="secondary" onClick={() => del(g.id)}>
+                Delete
+              </button>
+            </div></div>)}
           </ModuleMessage>
         </Card>
       </div>
@@ -799,7 +887,7 @@ function Gap({ profile }) {
 
 function Resources({ role, data, setData, loading, error, notify }) {
   const canManage = role === 'ADMIN' || role === 'FACULTY';
-  const blank = { icon: '▤', title: '', type: 'Course', category: '', level: 'Beginner' };
+  const blank = { icon: '▤', title: '', type: 'Course', category: '', level: 'Beginner', url: ''};
   const [form, setForm] = useState(blank);
   const [editId, setEditId] = useState(null);
   const save = async (e) => {
@@ -820,13 +908,52 @@ function Resources({ role, data, setData, loading, error, notify }) {
       {error && <p className="error">{error}</p>}
       {canManage && <form className="card form" onSubmit={save} style={{ marginBottom: 20 }}>
         <h3>{editId ? 'Edit Resource' : 'Add Learning Resource'}</h3>
-        <div className="formGrid"><Field label="Title" value={form.title} onChange={(v) => setForm({ ...form, title: v })} /><Field label="Category" value={form.category} onChange={(v) => setForm({ ...form, category: v })} /><Field label="Type" value={form.type} onChange={(v) => setForm({ ...form, type: v })} /><Field label="Level" value={form.level} onChange={(v) => setForm({ ...form, level: v })} /></div>
+        <div className="formGrid">
+  <Field
+    label="Title"
+    value={form.title}
+    onChange={(v) => setForm({ ...form, title: v })}
+  />
+
+  <Field
+    label="Category"
+    value={form.category}
+    onChange={(v) => setForm({ ...form, category: v })}
+  />
+
+  <Field
+    label="Type"
+    value={form.type}
+    onChange={(v) => setForm({ ...form, type: v })}
+  />
+
+  <Field
+    label="Level"
+    value={form.level}
+    onChange={(v) => setForm({ ...form, level: v })}
+  />
+
+  <Field
+    label="Resource URL"
+    type="url"
+    value={form.url}
+    onChange={(v) => setForm({ ...form, url: v })}
+    placeholder="https://example.com/course"
+  />
+</div> 
         <div className="actions"><button className="primary">{editId ? 'Update Resource' : 'Add Resource'}</button>{editId && <button type="button" className="secondary" onClick={() => { setEditId(null); setForm(blank); }}>Cancel</button>}</div>
       </form>}
       <div className="projectGrid"><ModuleMessage loading={loading} hasData={data.length > 0} empty="No resources are available in the database yet.">
         {data.map((res) => <div className="card project" key={res.id}><div className="projectIcon">{res.icon || '▤'}</div>
           <h3>{res.title}</h3><p>Category: {res.category} · {res.type}</p><span className="tag">{res.level}</span>
-          {canManage && <div className="actions" style={{ marginTop: 12 }}><button className="secondary" onClick={() => { setEditId(res.id); setForm({ icon: res.icon || '▤', title: res.title || '', category: res.category || '', type: res.type || 'Course', level: res.level || 'Beginner' }); }}>Edit</button><button className="secondary" onClick={() => remove(res.id)}>Delete</button></div>}
+          {res.url && /^https?:\/\//i.test(res.url) && (
+  <div className="projectFoot">
+    <a href={res.url} target="_blank" rel="noopener noreferrer">
+      Open Resource ↗
+    </a>
+  </div>
+)}
+          {canManage && <div className="actions resource-card-actions"><button className="secondary" onClick={() => { setEditId(res.id); setForm({ icon: res.icon || '▤', title: res.title || '', category: res.category || '', type: res.type || 'Course', level: res.level || 'Beginner', url: res.url }); }}>Edit</button><button className="secondary" onClick={() => remove(res.id)}>Delete</button></div>}
         </div>)}
       </ModuleMessage></div>
     </>
@@ -861,12 +988,12 @@ function Opportunities({ role, data, setData, loading, error, notify }) {
         <label className="field"><span>Description</span><textarea rows="3" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></label>
         <div className="actions"><button className="primary">{editId ? 'Update Opportunity' : 'Add Opportunity'}</button>{editId && <button type="button" className="secondary" onClick={() => { setEditId(null); setForm(blank); }}>Cancel</button>}</div>
       </form>}
-      <div className="projectGrid"><ModuleMessage loading={loading} hasData={data.length > 0} empty="No opportunities are available in the database yet.">
-        {data.map((opp) => <div className="card project" key={opp.id}><div className="projectIcon">↗️</div>
+      <div className="projectGrid opportunity-grid"><ModuleMessage loading={loading} hasData={data.length > 0} empty="No opportunities are available in the database yet.">
+        {data.map((opp) => <div className="card project opportunity-card" key={opp.id}><div className="projectIcon">↗️</div>
           <h3>{opp.title}</h3><p><b>{opp.company}</b> · {opp.type} ({opp.location})</p><p>{opp.description}</p>
           {opp.deadline && <small>Deadline: {opp.deadline}</small>}
           {opp.applicationLink && <div className="projectFoot"><a href={opp.applicationLink} target="_blank" rel="noreferrer">Apply / View ↗</a></div>}
-          {canManage && <div className="actions" style={{ marginTop: 12 }}><button className="secondary" onClick={() => { setEditId(opp.id); setForm({ title: opp.title || '', company: opp.company || '', type: opp.type || 'Internship', location: opp.location || 'Remote', description: opp.description || '', applicationLink: opp.applicationLink || '', deadline: opp.deadline || '' }); }}>Edit</button><button className="secondary" onClick={() => remove(opp.id)}>Delete</button></div>}
+          {canManage && <div className="actions opportunity-actions"><button className="secondary" onClick={() => { setEditId(opp.id); setForm({ title: opp.title || '', company: opp.company || '', type: opp.type || 'Internship', location: opp.location || 'Remote', description: opp.description || '', applicationLink: opp.applicationLink || '', deadline: opp.deadline || '' }); }}>Edit</button><button className="secondary" onClick={() => remove(opp.id)}>Delete</button></div>}
         </div>)}
       </ModuleMessage></div>
     </>

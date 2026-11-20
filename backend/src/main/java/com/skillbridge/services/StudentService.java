@@ -22,7 +22,7 @@ public class StudentService {
     }
 
     public List<Student> getAllStudents() {
-        return studentRepository.findAll();
+    return studentRepository.findByUser_Role("STUDENT");
     }
 
     public Student getStudentById(Long id) {

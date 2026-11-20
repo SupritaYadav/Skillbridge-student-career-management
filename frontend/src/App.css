@@ -28,3 +28,273 @@
 .form .actions>button.primary{background:#586bdc;color:#fff;border:1px solid #586bdc}
 .form .actions>button.secondary{background:#f3f5f8;color:#59657b;border:1px solid #e5e9ef}
 @media(max-width:760px){.adminActions{flex-direction:column}.adminActions button{width:100%}.form .actions>button{width:100%}}
+
+/* Header text in dark mode */
+.dark .crumb {
+  color: #b8c3d6;
+}
+
+.dark .crumb b {
+  color: #ffffff;
+}
+
+/* Resource and opportunity cards */
+.resource,
+.opp {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.resource > *,
+.opp > * {
+  min-width: 0;
+}
+
+.resource .actions,
+.opp .actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  text-align: right;
+}
+
+.resource .actions button,
+.opp .actions button {
+  max-width: 100%;
+  padding: 8px 12px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-size: 10px;
+  border-radius: 7px;
+}
+
+.opp > div {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Keep buttons inside cards on smaller screens */
+@media (max-width: 760px) {
+  .resource .actions,
+  .opp .actions {
+    justify-content: flex-start;
+  }
+
+  .opp .primary {
+    margin-left: 0;
+  }
+}
+/* Buttons inside resource and opportunity cards */
+.resource-card-actions,
+.opportunity-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
+  margin-top: 16px;
+  text-align: left;
+}
+
+.resource-card-actions button,
+.opportunity-card-actions button {
+  flex: 0 1 auto;
+  min-width: 65px;
+  max-width: 100%;
+  padding: 9px 15px;
+  border-radius: 8px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.card.project {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.card.project h3,
+.card.project p {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+  .resource-card-actions,
+  .opportunity-card-actions {
+    gap: 8px;
+  }
+
+  .resource-card-actions button,
+  .opportunity-card-actions button {
+    padding: 9px 12px;
+  }
+}
+
+/* Dark mode branding */
+.dark .crumb {
+  color: #c0c9d9;
+}
+
+.dark .crumb b {
+  color: #ffffff;
+}
+/* Opportunity cards layout fix */
+
+.opportunity-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  align-items: stretch;
+}
+
+.opportunity-card {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.opportunity-card h3,
+.opportunity-card p {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.opportunity-card .projectFoot {
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 8px;
+  overflow-wrap: anywhere;
+}
+
+.opportunity-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
+  max-width: 100%;
+  margin-top: auto;
+  padding-top: 14px;
+}
+
+.opportunity-actions button {
+  flex: 0 1 auto;
+  min-width: 65px;
+  max-width: 100%;
+  padding: 9px 14px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+@media (max-width: 1050px) {
+  .opportunity-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .opportunity-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .opportunity-card {
+    width: 100%;
+  }
+
+  .opportunity-actions {
+    justify-content: flex-start;
+  }
+}
+.goal {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.goal > div:first-child {
+  flex: 1;
+  min-width: 180px;
+}
+
+.goalActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-width: 0;
+}
+
+.goalActions button {
+  flex-shrink: 0;
+  white-space: nowrap;
+  color: #ffffff !important;
+  background: #42619e !important;
+  border: 1px solid #0a51b6 !important;
+  font-weight: 600;
+  padding: 9px 16px;
+  border-radius: 8px;
+}
+
+.goalActions button:hover {
+  background: #596b91 !important;
+  color: #ffffff !important;
+}
+
+.goalActions button:has(.status) {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+.goalActions button:has(.status):hover {
+  background: transparent !important;
+}
+/* Planned - Light Yellow */
+.status.planned {
+  background: #fef3c7 !important;
+  color: #92400e !important;
+}
+
+/* In Progress - Light Green */
+.status.in-progress {
+  background: #dcfce7 !important;
+  color: #166534 !important;
+}
+
+/* Completed - Green */
+.status.completed {
+  background: #16a34a !important;
+  color: #ffffff !important;
+}
+
+/* Status badge */
+.goalActions button:has(.status) {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+.goalActions button:has(.status):hover {
+  background: transparent !important;
+}
+
+.goalActions button .status {
+  display: inline-block;
+  padding: 7px 14px;
+  border-radius: 20px;
+  font-weight: 600;
+  white-space: nowrap;
+}

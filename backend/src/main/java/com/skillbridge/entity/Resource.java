@@ -23,6 +23,7 @@ public class Resource {
     private String category;
 
     private String level;
+    private String url;
 
     public Resource() {
     }
@@ -69,5 +70,13 @@ public class Resource {
 
     public void setLevel(String level) {
         this.level = level;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

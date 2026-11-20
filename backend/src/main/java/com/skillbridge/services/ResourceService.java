@@ -45,6 +45,7 @@ public class ResourceService {
         existing.setType(resource.getType());
         existing.setCategory(resource.getCategory());
         existing.setLevel(resource.getLevel());
+        existing.setUrl(resource.getUrl());
 
         return resourceRepository.save(existing);
     }
